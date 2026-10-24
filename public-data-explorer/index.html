@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Repository Explorer</title>
+  <meta name="description" content="Search public GitHub repositories, filter by language, and sort by stars, activity, or name.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235A3FD1'/%3E%3Cpath d='M16 6.5l2.7 5.9 6.4.7-4.8 4.3 1.4 6.3-5.7-3.3-5.7 3.3 1.4-6.3-4.8-4.3 6.4-.7z' fill='%23fff'/%3E%3C/svg%3E">
+
+  <!-- Apply the saved or system theme before first paint to avoid a flash -->
+  <script>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem("theme"); } catch (e) {}
+      if (theme !== "light" && theme !== "dark") {
+        theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#results">Skip to results</a>
+
+  <header class="masthead">
+    <div class="wrap masthead__bar">
+      <p class="brand">Repository Explorer</p>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Switch to dark theme">
+        <svg class="icon icon--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.6 5.6 0 0 1 6.4 2.5a5.6 5.6 0 1 0 7.1 7.1z"/></svg>
+        <svg class="icon icon--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1.2v1.6M8 13.2v1.6M1.2 8h1.6M13.2 8h1.6M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1"/></svg>
+      </button>
+    </div>
+
+    <div class="wrap hero">
+      <h1>Explore public GitHub repositories</h1>
+      <p class="lede">Search by keyword, narrow by language, and sort by stars or recent activity.</p>
+
+      <form id="search-form" class="search" role="search" novalidate>
+        <label class="sr-only" for="q">Search repositories</label>
+        <input id="q" name="q" type="search" placeholder="Try “machine learning”" autocomplete="off" maxlength="256" spellcheck="false">
+        <button type="submit" class="btn btn--primary">Search</button>
+      </form>
+
+      <div class="filters">
+        <div class="field">
+          <label for="lang">Language</label>
+          <select id="lang" name="lang">
+            <option value="">Any language</option>
+            <option>Python</option>
+            <option>JavaScript</option>
+            <option>TypeScript</option>
+            <option>Java</option>
+            <option>C++</option>
+            <option>C</option>
+            <option>C#</option>
+            <option>Go</option>
+            <option>Rust</option>
+            <option>Kotlin</option>
+            <option>Swift</option>
+            <option>Dart</option>
+            <option>PHP</option>
+            <option>Ruby</option>
+            <option>HTML</option>
+            <option>CSS</option>
+            <option>Shell</option>
+            <option>Jupyter Notebook</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sort">Sort by</label>
+          <select id="sort" name="sort">
+            <option value="best">Best match</option>
+            <option value="stars">Most stars</option>
+            <option value="updated">Recently updated</option>
+            <option value="name">Name, A to Z</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <div id="error" class="notice notice--error" role="alert" hidden></div>
+
+    <section id="suggestions" class="suggestions" aria-label="Search suggestions">
+      <p>Not sure where to start? Try one of these.</p>
+      <ul class="chips"></ul>
+    </section>
+
+    <section id="empty" class="empty" hidden>
+      <h2>No repositories found</h2>
+      <p></p>
+    </section>
+
+    <ul id="results" class="grid" aria-busy="false"></ul>
+
+    <div class="more">
+      <button id="load-more" class="btn" type="button" hidden>Load more</button>
+    </div>
+  </main>
+
+  <footer class="wrap footer">
+    <p>Data comes live from the <a href="https://docs.github.com/en/rest/search/search#search-repositories" target="_blank" rel="noopener noreferrer">GitHub REST API</a>. Bars under each result compare stars among the repositories loaded.</p>
+    <p id="rate-info"></p>
+  </footer>
+</body>
+</html>
